@@ -4,7 +4,7 @@ let productImage = document.querySelector("#image");
 let productName = document.querySelector("#product-name");
 let productDescription = document.querySelector("#product-display");
 let cartPrice = document.querySelector("#price");
-let cartinStock = document.querySelector("#inStock");
+//let cartinStock = document.querySelector("#inStock");
 let totalPriceCalc = document.querySelector(".total-price");
 let totalItemCalc = document.querySelector(".total-item");
 
@@ -16,7 +16,12 @@ let allProduct = "";
 
 let totalPrice = 0;
 let totalItem = 0;
+let subTotal = 0;
 
+const displayTotalPriceAndItem = () => {
+  totalPriceCalc.innerText = "Total Price: " + totalPrice;
+  totalItemCalc.innerText = "Total Item: " + totalItem;
+};
 const cartProductRemove = (e) => {
   let upperNode = e.parentNode;
   console.log(upperNode.parentNode.querySelector(".cart-p-price").textContent);
@@ -26,24 +31,24 @@ const cartProductRemove = (e) => {
 
   totalPrice -= removedPrice;
   totalItem--;
-
-  totalPriceCalc.innerText = "Total Price: " + totalPrice;
-  totalItemCalc.innerText = "Total Item: " + totalItem;
+  displayTotalPriceAndItem();
   upperNode.parentNode.remove();
 };
 
 const clearCart = () => {
   cartProductTable.innerHTML = "";
   totalPrice = 0;
-  totalPriceCalc.innerText = "Total Price: " + totalPrice;
   totalItem = 0;
-  totalItemCalc.innerText = "Total Item: " + totalItem;
+
+  displayTotalPriceAndItem();
 };
 
-let addToCart = (event) => {
+let addToCart = (event, ...values) => {
   // event.preventDefault()
-  let pId = event.closest(".card-body").dataset.productid;
+
+  //let pId = event.closest(".card-body").dataset.productid;
   let pImage = event.closest(".card").querySelector("#img").dataset.productimg;
+
   let pTitle = event
     .closest(".card-body")
     .querySelector(".card-title").textContent;
@@ -52,11 +57,29 @@ let addToCart = (event) => {
     event.closest(".card-body").querySelector("#price").dataset.price
   );
   let pInStock = Number(
-    event.closest(".card-body").querySelector("#inStock").dataset.inStock
+    event.closest(".card-body").querySelector("#inStock").dataset.instock
   );
+  console.log("🚀 ~ file: cart.js:62 ~ addToCart ~ pInStock:", pInStock)
+  let quantity = Number(document.querySelector("#iquantity"));
+  console.log("🚀 ~ file: cart.js:61 ~ addToCart ~ quantity:", quantity);
+
+  //let Q = quantity.value;
+  //console.log("🚀 ~ file: cart.js:64 ~ addToCart ~ Q:", Q)
+  subTotal = pPrice * quantity;
+  let pId = values[0];
+  //let pImage = "/images/" + values[1];
+  //let pTitle = values[2];
+  //let pPrice = values[3];
+  //let pInStock = values[4];
 
   totalPrice += pPrice;
   totalItem++;
+  displayProductCart(pImage, pTitle, pPrice, pInStock, subTotal);
+  console.log("🚀 ~ file: cart.js:77 ~ addToCart ~ pInStock:", pInStock)
+  displayTotalPriceAndItem();
+};
+
+const displayProductCart = (pImage, pTitle, pPrice, pInStock, subTotal) => {
   let productCart = `
     <tr>
       <td data-th="Product">
@@ -80,11 +103,13 @@ let addToCart = (event) => {
       <td id="quantity" data-th="quantity">
         <input
           type="number"
-          class="form-control form-control-lg text-center"
+          id="iquantity" 
+          class="form-control form-control-lg text-center quantity"
           value="1"
         />
       </td>
       <td id="inStock" data-th="inStock">${pInStock}</td>
+      <td id="subTotal" data-th="subTotal">${subTotal}</td>
       <td class="actions" data-th="">       
           <button onclick="cartProductRemove(this)" class="btn btn-danger border-secondary btn-md mb-2">
             Remove
@@ -93,14 +118,10 @@ let addToCart = (event) => {
     </tr>`;
 
   cartProductTable.innerHTML += productCart;
-
-  totalPriceCalc.innerText = "Total Price: " + totalPrice;
-  totalItemCalc.innerText = "Total Item: " + totalItem;
 };
 
 window.addToCart = addToCart;
 window.cartProductRemove = cartProductRemove;
 window.clearCart = clearCart;
 
-export { clearCart };
-
+export { addToCart, clearCart };

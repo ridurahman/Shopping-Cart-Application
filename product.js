@@ -1,5 +1,6 @@
-
+import { addToCart } from "/cart.js";
 let productCards = document.querySelector("#product-display");
+
 const displayProduct = (item) => {
   productCards.innerHTML += `
     <div class="col-4">
@@ -16,14 +17,25 @@ const displayProduct = (item) => {
           </p>
           <p id="price" class="card-text" data-price="${item.prices}">Price : ${item.prices}
           </p>
-          <p id="inStock" class="card-text" data-inStock="${item.inStock}">In Stock : ${item.inStock}
+          <p id="inStock" class="card-text" data-instock="${item.inStock}">In Stock : ${item.inStock}
           </p>
-          <button class="btn btn-primary" onclick="addToCart(this, ${item.id})">Add to Cart</button>
+          <button class="btn btn-primary addToCartButton" onclick="addToCart(this, ${item.id})" >Add to Cart</button>
          </div>
         </div>
        </div>`;
+/*
+  const addToCartButton = document.querySelector(".addToCartButton");
+  addToCartButton.addEventListener("click", () => {
+    addToCart(
+      this,
+      item.id,
+      item.img_source,
+      item.product_name,
+      item.prices,
+      item.inStock
+    );
+  }); */
 };
-
 
 const getAllProduct = async () => {
   const res = await fetch("/data/products.json");
@@ -37,4 +49,3 @@ const getAllProduct = async () => {
 };
 
 export { getAllProduct };
-
