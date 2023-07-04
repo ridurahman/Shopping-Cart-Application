@@ -17,9 +17,6 @@
   </head>
 
   <body>
-    <script>
-      import { clearCart } from "/cart.js";
-    </script>
     <div class="container">
       <div class="row">
         <div class="col-6">
@@ -45,7 +42,7 @@
             <tr>
               <th style="width: 40%">Product</th>
               <th style="width: 10%">Price</th>
-              <th style="width: 12%">Quantity</th>
+              <th style="width: 16%">Quantity</th>
               <th style="width: 10%">In Stock</th>
               <th style="width: 10%">Sub Total</th>
               <th style="width: 16%"></th>
@@ -61,6 +58,17 @@
       <hr />
       <div class="row" id="product-display"></div>
     </div>
+    <script>
+      const quanAmount = document.getElementById("quan");
+      const onChangeNumber = (event) => {
+        const input = event.target;
+
+        const quantity = parseInt(input.value);
+      };
+      quanAmount.addEventListener("onchange", (e) => {
+        onChangeNumber(e);
+      });
+    </script>
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
       integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"

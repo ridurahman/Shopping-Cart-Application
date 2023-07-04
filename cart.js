@@ -16,70 +16,79 @@ let allProduct = "";
 
 let totalPrice = 0;
 let totalItem = 0;
-let subTotal = 0;
+//let subTotal = 0;
+let quantity = 0;
+
+let ids = [];
 
 const displayTotalPriceAndItem = () => {
   totalPriceCalc.innerText = "Total Price: " + totalPrice;
   totalItemCalc.innerText = "Total Item: " + totalItem;
 };
-const cartProductRemove = (e) => {
+
+const cartProductRemove = (e, pId) => {
   let upperNode = e.parentNode;
   console.log(upperNode.parentNode.querySelector(".cart-p-price").textContent);
   let removedPrice = Number(
     upperNode.parentNode.querySelector(".cart-p-price").textContent
   );
-
   totalPrice -= removedPrice;
   totalItem--;
-  displayTotalPriceAndItem();
   upperNode.parentNode.remove();
+  ids = ids.filter((item) => item.pId !== pId);
+  displayTotalPriceAndItem();
 };
 
 const clearCart = () => {
   cartProductTable.innerHTML = "";
   totalPrice = 0;
   totalItem = 0;
-
   displayTotalPriceAndItem();
+  ids = [];
 };
 
 let addToCart = (event, ...values) => {
   // event.preventDefault()
-
-  //let pId = event.closest(".card-body").dataset.productid;
-  let pImage = event.closest(".card").querySelector("#img").dataset.productimg;
-
-  let pTitle = event
-    .closest(".card-body")
-    .querySelector(".card-title").textContent;
-
-  let pPrice = Number(
-    event.closest(".card-body").querySelector("#price").dataset.price
-  );
-  let pInStock = Number(
-    event.closest(".card-body").querySelector("#inStock").dataset.instock
-  );
-  console.log("🚀 ~ file: cart.js:62 ~ addToCart ~ pInStock:", pInStock)
-  let quantity = Number(document.querySelector("#iquantity"));
-  console.log("🚀 ~ file: cart.js:61 ~ addToCart ~ quantity:", quantity);
-
-  //let Q = quantity.value;
-  //console.log("🚀 ~ file: cart.js:64 ~ addToCart ~ Q:", Q)
-  subTotal = pPrice * quantity;
   let pId = values[0];
-  //let pImage = "/images/" + values[1];
-  //let pTitle = values[2];
-  //let pPrice = values[3];
-  //let pInStock = values[4];
+  if (pId in ids) {
+    alert("item is already in cart");
+  } else {
+    //let pId = event.closest(".card-body").dataset.productid;
+    let pImage = event.closest(".card").querySelector("#img")
+      .dataset.productimg;
 
-  totalPrice += pPrice;
-  totalItem++;
-  displayProductCart(pImage, pTitle, pPrice, pInStock, subTotal);
-  console.log("🚀 ~ file: cart.js:77 ~ addToCart ~ pInStock:", pInStock)
-  displayTotalPriceAndItem();
+    let pTitle = event
+      .closest(".card-body")
+      .querySelector(".card-title").textContent;
+
+    let pPrice = Number(
+      event.closest(".card-body").querySelector("#price").dataset.price
+    );
+    let pInStock = Number(
+      event.closest(".card-body").querySelector("#inStock").dataset.instock
+    );
+
+    //let pImage = "/images/" + values[1];
+    //let pTitle = values[2];
+    //let pPrice = values[3];
+    //let pInStock = values[4];
+    let subTotal = pPrice * quantity;
+    totalPrice += pPrice;
+    totalItem++;
+    displayProductCart(pId, pImage, pTitle, pPrice, pInStock, subTotal);
+    displayTotalPriceAndItem();
+    ids.push(pId);
+  }
 };
 
-const displayProductCart = (pImage, pTitle, pPrice, pInStock, subTotal) => {
+const displayProductCart = (
+  pId,
+  pImage,
+  pTitle,
+  pPrice,
+  pInStock,
+  subTotal
+) => {
   let productCart = `
     <tr>
       <td data-th="Product">
@@ -99,19 +108,19 @@ const displayProductCart = (pImage, pTitle, pPrice, pInStock, subTotal) => {
           </div>
         </div>
       </td>
-      <td id="price" data-th="Price"><span class="cart-p-price">${pPrice}</span></td>
-      <td id="quantity" data-th="quantity">
+      <td id="price" ><span class="cart-p-price">${pPrice}</span></td>
+      <td id="quantity" >
         <input
-          type="number"
-          id="iquantity" 
-          class="form-control form-control-lg text-center quantity"
-          value="1"
+          type="number" name="iquantity"
+          id="quan" value="1" 
+          min="1" max="${pInStock}"
         />
+        
       </td>
-      <td id="inStock" data-th="inStock">${pInStock}</td>
-      <td id="subTotal" data-th="subTotal">${subTotal}</td>
-      <td class="actions" data-th="">       
-          <button onclick="cartProductRemove(this)" class="btn btn-danger border-secondary btn-md mb-2">
+      <td id="inStock" >${pInStock}</td>
+      <td id="subTotal" >${subTotal}</td>
+      <td class="actions" >       
+          <button onclick="cartProductRemove(this, ${pId})" class="btn btn-danger border-secondary btn-md mb-2">
             Remove
           </button>    
       </td>
@@ -123,5 +132,6 @@ const displayProductCart = (pImage, pTitle, pPrice, pInStock, subTotal) => {
 window.addToCart = addToCart;
 window.cartProductRemove = cartProductRemove;
 window.clearCart = clearCart;
+window.quantity = quantity;
 
 export { addToCart, clearCart };
