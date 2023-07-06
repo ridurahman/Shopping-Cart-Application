@@ -16,8 +16,8 @@ let allProduct = "";
 
 let totalPrice = 0;
 let totalItem = 0;
-//let subTotal = 0;
-let quantity = 0;
+let subTotal = 0;
+let quantity = 1;
 
 let ids = [];
 
@@ -28,14 +28,17 @@ const displayTotalPriceAndItem = () => {
 
 const cartProductRemove = (e, pId) => {
   let upperNode = e.parentNode;
-  console.log(upperNode.parentNode.querySelector(".cart-p-price").textContent);
   let removedPrice = Number(
-    upperNode.parentNode.querySelector(".cart-p-price").textContent
+    upperNode.parentNode.querySelector(".cart-sub-price").textContent
   );
   totalPrice -= removedPrice;
   totalItem--;
   upperNode.parentNode.remove();
-  ids = ids.filter((item) => item.pId !== pId);
+  let neArray = ids.filter((item) => item !== Number(pId));
+  ids = neArray;
+  console.log("🚀 ~ file: cart.js:39 ~ cartProductRemove ~ pId:", pId)
+  console.log("🚀 ~ file: cart.js:39 ~ cartProductRemove ~ ids:", ids)
+  
   displayTotalPriceAndItem();
 };
 
@@ -49,8 +52,9 @@ const clearCart = () => {
 
 let addToCart = (event, ...values) => {
   // event.preventDefault()
-  let pId = values[0];
-  if (pId in ids) {
+  let pId = Number(values[0]);
+  if (ids.includes(pId)) {
+    console.log("🚀 ~ file: cart.js:58 ~ addToCart ~ ids:", ids)
     alert("item is already in cart");
   } else {
     //let pId = event.closest(".card-body").dataset.productid;
@@ -72,8 +76,8 @@ let addToCart = (event, ...values) => {
     //let pTitle = values[2];
     //let pPrice = values[3];
     //let pInStock = values[4];
-    let subTotal = pPrice * quantity;
-    totalPrice += pPrice;
+    subTotal = pPrice * quantity;
+    totalPrice += subTotal;
     totalItem++;
     displayProductCart(pId, pImage, pTitle, pPrice, pInStock, subTotal);
     displayTotalPriceAndItem();
@@ -118,7 +122,7 @@ const displayProductCart = (
         
       </td>
       <td id="inStock" >${pInStock}</td>
-      <td id="subTotal" >${subTotal}</td>
+      <td id="subTotal" ><span class="cart-sub-price">${subTotal}</span></td>
       <td class="actions" >       
           <button onclick="cartProductRemove(this, ${pId})" class="btn btn-danger border-secondary btn-md mb-2">
             Remove
