@@ -4,7 +4,7 @@ let productImage = document.querySelector("#image");
 let productName = document.querySelector("#product-name");
 let productDescription = document.querySelector("#product-display");
 let cartPrice = document.querySelector("#price");
-//let cartinStock = document.querySelector("#inStock");
+
 let totalPriceCalc = document.querySelector(".total-price");
 let totalItemCalc = document.querySelector(".total-item");
 
@@ -12,13 +12,9 @@ let cartProductTable = document.querySelector("#cart-items");
 
 let btnClearCart = document.querySelector("#btnClearCart");
 
-let allProduct = "";
-
-let totalPrice = 0;
 let totalItem = 0;
 let subTotal = 0;
-let quantity = 1;
-
+var totalPrice = 0;
 let ids = [];
 
 const displayTotalPriceAndItem = () => {
@@ -36,9 +32,6 @@ const cartProductRemove = (e, pId) => {
   upperNode.parentNode.remove();
   let neArray = ids.filter((item) => item !== Number(pId));
   ids = neArray;
-  console.log("🚀 ~ file: cart.js:39 ~ cartProductRemove ~ pId:", pId)
-  console.log("🚀 ~ file: cart.js:39 ~ cartProductRemove ~ ids:", ids)
-  
   displayTotalPriceAndItem();
 };
 
@@ -54,7 +47,6 @@ let addToCart = (event, ...values) => {
   // event.preventDefault()
   let pId = Number(values[0]);
   if (ids.includes(pId)) {
-    console.log("🚀 ~ file: cart.js:58 ~ addToCart ~ ids:", ids)
     alert("item is already in cart");
   } else {
     //let pId = event.closest(".card-body").dataset.productid;
@@ -76,23 +68,53 @@ let addToCart = (event, ...values) => {
     //let pTitle = values[2];
     //let pPrice = values[3];
     //let pInStock = values[4];
-    subTotal = pPrice * quantity;
-    totalPrice += subTotal;
+    //subTotal = pPrice * quantity;
+    //totalPrice += pPrice;
     totalItem++;
-    displayProductCart(pId, pImage, pTitle, pPrice, pInStock, subTotal);
-    displayTotalPriceAndItem();
+    displayProductCart(pId, pImage, pTitle, pPrice.toFixed(2), pInStock);
+    calculateSubTotal();
+    calculateTotal();
+    //displayTotalPriceAndItem();
+    totalItemCalc.innerText = "Total Item: " + totalItem;
+    //totalPriceCalc.innerText = "Total Price: " + (totalPrice += pPrice);
     ids.push(pId);
   }
 };
 
-const displayProductCart = (
-  pId,
-  pImage,
-  pTitle,
-  pPrice,
-  pInStock,
-  subTotal
-) => {
+const calculateTotal = () => {
+  
+  const subtotalElements = document.getElementsByClassName("cart-sub-price");
+  totalPrice = 0;
+
+  Array.from(subtotalElements).forEach(function (subtotalElement) {
+    const subtotalValue = parseFloat(subtotalElement.textContent);
+    totalPrice += subtotalValue;
+  });
+  totalPriceCalc.innerText = "Total Price: $" + totalPrice.toFixed(2);
+  console.log(totalPrice.toFixed(2));
+}; 
+
+const calculateSubTotal = () => {
+  const quantityInputs = document.querySelectorAll(".quan-input");
+  Array.from(quantityInputs).forEach(function (quantityInput) {
+    quantityInput.addEventListener("input", function () {
+      const row = quantityInput.closest("tr");
+
+      const quantityValue = parseInt(quantityInput.value);
+
+      const priceElement = row.querySelector(".cart-p-price");
+
+      const priceValue = parseFloat(priceElement.textContent);
+
+      const subtotal = quantityValue * priceValue;
+      const subtotalElement = row.querySelector(".cart-sub-price");
+      subtotalElement.textContent = subtotal.toFixed(2);
+      calculateTotal();
+    });
+  });
+};
+
+const displayProductCart = (pId, pImage, pTitle, pPrice, pInStock) => {
   let productCart = `
     <tr>
       <td data-th="Product">
@@ -112,17 +134,17 @@ const displayProductCart = (
           </div>
         </div>
       </td>
-      <td id="price" ><span class="cart-p-price">${pPrice}</span></td>
+      <td id="price" >$<span class="cart-p-price">${pPrice}</span></td>
       <td id="quantity" >
         <input
           type="number" name="iquantity"
-          id="quan" value="1" 
+          id="quan" value="1" class="quan-input"
           min="1" max="${pInStock}"
         />
         
       </td>
       <td id="inStock" >${pInStock}</td>
-      <td id="subTotal" ><span class="cart-sub-price">${subTotal}</span></td>
+      <td id="subTotal" >$<span class="cart-sub-price">${pPrice}</span></td>
       <td class="actions" >       
           <button onclick="cartProductRemove(this, ${pId})" class="btn btn-danger border-secondary btn-md mb-2">
             Remove
@@ -131,11 +153,18 @@ const displayProductCart = (
     </tr>`;
 
   cartProductTable.innerHTML += productCart;
+  //totalPriceCalc.innerText = "Total Price: " + (totalPrice += pPrice);
 };
 
+const getQuantity = (value, price) => {
+  return value, getSubTotal;
+};
+const getSubTotal = () => {
+  subTotal = value * price;
+  return subTotal;
+};
 window.addToCart = addToCart;
 window.cartProductRemove = cartProductRemove;
 window.clearCart = clearCart;
-window.quantity = quantity;
 
 export { addToCart, clearCart };
